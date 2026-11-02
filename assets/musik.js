@@ -44,7 +44,7 @@
     var z = zerlege(t), n = DT[z.b];
     if (z.v === "#") n += "is";
     else if (z.v === "b") n = { E: "es", A: "as", B: "b" }[z.b] || n + "es";
-    if (okt) n += { 3: "", 4: "′", 5: "″", 6: "‴" }[z.o] || "";
+    if (okt) { if (z.o <= 2) n = n.charAt(0).toUpperCase() + n.slice(1); n += { 3: "", 4: "′", 5: "″", 6: "‴" }[z.o] || ""; }
     return n;
   }
   function tonAus(st, m) {
@@ -157,6 +157,7 @@
     return { reihe: el("div", { class: "knopfreihe" }, [p, l, n]), pruefen: p, loesung: l };
   }
   function rueckmeldung(rueck, n, gesamt) {
+    if (window.Fortschritt) window.Fortschritt.melden(rueck, n / gesamt);
     rueck.innerHTML = "";
     rueck.appendChild(el("strong", { class: n === gesamt ? "gut" : "schlecht", text: n + " von " + gesamt + " richtig. " }));
     rueck.appendChild(document.createTextNode(lob(n / gesamt)));
@@ -193,6 +194,7 @@
           erkl.textContent = (ok ? "Richtig! " : "Leider falsch. ") + (f.erklaerung || "");
           erkl.className = "erklaerung " + (ok ? "gut" : "schlecht");
           beantwortet++; if (ok) richtig++; standText();
+          if (beantwortet === fragen.length && window.Fortschritt) window.Fortschritt.melden(box, richtig / fragen.length);
         });
         opts.appendChild(b);
       });
@@ -206,8 +208,9 @@
      Übung: Noten lesen (Namen eintragen)
      --------------------------------------------------------- */
   function norm(s, oktave) {
-    s = String(s).toLowerCase().replace(/\s+/g, "").replace(/[’′´`‘]/g, "'").replace(/″/g, "''");
-    if (!oktave) s = s.replace(/['0-9]/g, "");
+    s = String(s).replace(/\s+/g, "").replace(/[’′´`‘]/g, "'").replace(/″/g, "''");
+    if (!oktave) s = s.replace(/['0-9]/g, "").toLowerCase();
+    else s = s.charAt(0) + s.slice(1).toLowerCase();
     return s;
   }
   function notenlesen(box, daten) {
@@ -268,7 +271,7 @@
     var huelle = el("div", { class: "klick-system" });
     var buehne = el("div", { class: "klick-buehne", tabindex: "0", role: "application", "aria-label": "Notensystem: Klicke, um eine Note zu setzen. Mit den Pfeiltasten hoch und runter, Enter setzt die Note." });
     var vzWahl = el("div", { class: "wahl vz-wahl", role: "group", "aria-label": "Vorzeichen" });
-    var vorschauSt = 30;
+    var BASIS = opts.schluessel === "bass" ? 18 : 30, vorschauSt = BASIS, MIN = BASIS - 7, MAX = BASIS + 15;
     if (opts.vorzeichen) ["", "#", "b"].forEach(function (v) {
       var b = el("button", { type: "button", "aria-pressed": v === "" ? "true" : "false", text: VZ_ZEICHEN[v], title: v === "" ? "ohne Vorzeichen" : v === "#" ? "Kreuz" : "b" });
       b.addEventListener("click", function () { vz = v; Array.prototype.forEach.call(vzWahl.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); zeichne(); });
@@ -297,7 +300,7 @@
       return teile.join(" ") + (loesung ? " || " + loesung.map(function (t) { return t + "/1"; }).join(" ") : "");
     }
     function zeichne() {
-      letztes = noten(text(), { zoom: 2.2, breite: opts.akkord ? 150 : Math.max(220, 90 + ((opts.vorgabe || []).length + opts.max) * 44 + (loesung ? opts.max * 44 + 30 : 0)) });
+      letztes = noten(text(), { zoom: 2.2, schluessel: opts.schluessel, breite: opts.akkord ? 150 : Math.max(220, 90 + ((opts.vorgabe || []).length + opts.max) * 44 + (loesung ? opts.max * 44 + 30 : 0)) });
       buehne.innerHTML = letztes.svg;
       var s = buehne.firstChild;
       if (!gesperrt && gesetzt.length < opts.max) {
@@ -307,8 +310,8 @@
         var g = document.createElementNS(NS, "g"); g.setAttribute("class", "vorschau");
         var y = letztes.y(vorschauSt);
         var hl = "";
-        for (var st = 28; st >= vorschauSt; st -= 2) hl += '<line class="hl-linie" x1="' + (x - 4) + '" y1="' + letztes.y(st) + '" x2="' + (x + 16) + '" y2="' + letztes.y(st) + '"/>';
-        for (st = 40; st <= vorschauSt; st += 2) hl += '<line class="hl-linie" x1="' + (x - 4) + '" y1="' + letztes.y(st) + '" x2="' + (x + 16) + '" y2="' + letztes.y(st) + '"/>';
+        for (var st = BASIS - 2; st >= vorschauSt; st -= 2) hl += '<line class="hl-linie" x1="' + (x - 4) + '" y1="' + letztes.y(st) + '" x2="' + (x + 16) + '" y2="' + letztes.y(st) + '"/>';
+        for (st = BASIS + 10; st <= vorschauSt; st += 2) hl += '<line class="hl-linie" x1="' + (x - 4) + '" y1="' + letztes.y(st) + '" x2="' + (x + 16) + '" y2="' + letztes.y(st) + '"/>';
         g.innerHTML = hl + N.glyph("noteheadWhole", x, y, 1, "ng") + (vz ? N.glyph(vz === "#" ? "accidentalSharp" : "accidentalFlat", x - 13, y, 1, "ng") : "");
         g.style.display = buehne.dataset.hover === "1" || document.activeElement === buehne ? "" : "none";
         s.appendChild(g);
@@ -318,8 +321,8 @@
     function stufeAus(ev) {
       var s = buehne.firstChild, pt = s.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
       var p = pt.matrixTransform(s.getScreenCTM().inverse());
-      var st = Math.round(30 + (letztes.yUnten - p.y) / (N.SP / 2));
-      return Math.max(23, Math.min(45, st));
+      var st = Math.round(BASIS + (letztes.yUnten - p.y) / (N.SP / 2));
+      return Math.max(MIN, Math.min(MAX, st));
     }
     function setzen(st) {
       if (gesperrt || gesetzt.length >= opts.max) return;
@@ -335,8 +338,8 @@
     buehne.addEventListener("pointerleave", function () { buehne.dataset.hover = ""; zeichne(); });
     buehne.addEventListener("click", function (ev) { setzen(stufeAus(ev)); });
     buehne.addEventListener("keydown", function (ev) {
-      if (ev.key === "ArrowUp") { vorschauSt = Math.min(45, vorschauSt + 1); ev.preventDefault(); zeichne(); }
-      else if (ev.key === "ArrowDown") { vorschauSt = Math.max(23, vorschauSt - 1); ev.preventDefault(); zeichne(); }
+      if (ev.key === "ArrowUp") { vorschauSt = Math.min(MAX, vorschauSt + 1); ev.preventDefault(); zeichne(); }
+      else if (ev.key === "ArrowDown") { vorschauSt = Math.max(MIN, vorschauSt - 1); ev.preventDefault(); zeichne(); }
       else if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setzen(vorschauSt); }
       else if (ev.key === "Backspace") { ev.preventDefault(); zurueck.click(); }
     });
@@ -362,7 +365,7 @@
       var karte = el("div", { class: "notier-karte" });
       karte.appendChild(el("p", { class: "frage", text: (nr + 1) + ". " + a.frage }));
       var ergebnis = el("p", { class: "notier-ergebnis", "aria-live": "polite" });
-      var sys = klickSystem({ vorgabe: a.vorgabe || [], akkord: !!a.akkord, max: a.ziel.length, vorzeichen: !!daten.vorzeichen, onAenderung: function () { ergebnis.textContent = ""; aktual(); } });
+      var sys = klickSystem({ schluessel: daten.schluessel || a.schluessel, vorgabe: a.vorgabe || [], akkord: !!a.akkord, max: a.ziel.length, vorzeichen: !!daten.vorzeichen, onAenderung: function () { ergebnis.textContent = ""; aktual(); } });
       sys.ziel = a.ziel; sys.ergebnis = ergebnis; sys.akkord = !!a.akkord; sys.vorgabe = a.vorgabe || [];
       karte.appendChild(sys.el); karte.appendChild(ergebnis);
       box.appendChild(karte); systeme.push(sys);
@@ -679,7 +682,7 @@
      ========================================================= */
   function notentrainer(box) {
     var MODI = {
-      stamm: "Stammtöne c′ bis a″", vorzeichen: "Töne mit Vorzeichen", intervall: "Intervalle", tonart: "Tonarten an den Vorzeichen", dreiklang: "Dreiklänge"
+      stamm: "Stammtöne c′ bis a″", bass: "Bassschlüssel", vorzeichen: "Töne mit Vorzeichen", intervall: "Intervalle", tonart: "Tonarten an den Vorzeichen", dreiklang: "Dreiklänge"
     };
     var modus = "stamm", nr = 0, richtig = 0, RUNDE = 10, aktuell = null;
     var wahl = el("div", { class: "wahl", role: "group", "aria-label": "Was möchtest du üben?" });
@@ -696,6 +699,10 @@
     var STAMMT = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5"];
     var VZT = ["C#4", "D#4", "F#4", "G#4", "A#4", "C#5", "D#5", "F#5", "G#5", "Db4", "Eb4", "Gb4", "Ab4", "Bb4", "Db5", "Eb5", "Gb5", "Ab5"];
     function erzeuge() {
+      if (modus === "bass") {
+        var tb = zufall(["C2", "D2", "E2", "F2", "G2", "A2", "B2", "C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4"]);
+        return { frage: "Wie heißt dieser Ton im Bassschlüssel?", noten: tb + "/1", spec: { schluessel: "bass" }, spiel: tb + "/2", richtig: tonname(tb), optionen: ["c", "d", "e", "f", "g", "a", "h"], erkl: "Das ist " + tonname(tb, true) + "." };
+      }
       if (modus === "stamm" || modus === "vorzeichen") {
         var t = zufall(modus === "stamm" ? STAMMT : VZT), n = tonname(t);
         var pool = modus === "stamm" ? ["c", "d", "e", "f", "g", "a", "h"] : ["cis", "dis", "fis", "gis", "ais", "des", "es", "ges", "as", "b"];

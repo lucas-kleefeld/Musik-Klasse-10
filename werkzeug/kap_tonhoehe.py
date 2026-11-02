@@ -1,4 +1,4 @@
-"""Kapitel 4 bis 6: Noten im Violinschlüssel, Vorzeichen, Dynamik."""
+"""Kapitel 4, 6 und 7: Noten im Violinschlüssel, Vorzeichen, Dynamik."""
 import random
 from notensatz import N
 from zeichnungen import svg, text, g, notenlinien
@@ -58,7 +58,7 @@ KAPITEL[4] = {
 {N("G4/1@g′ |", "Der Violinschlüssel legt fest: Auf der zweiten Linie liegt g′.", zoom=1.8)}
 
 <h2>Die Stammtöne</h2>
-<p>Die sieben <span class="fachwort">Stammtöne</span> heißen <strong>c – d – e – f – g – a – h</strong>. Danach beginnt die Reihe wieder von vorn, nur eine <strong>Oktave</strong> höher. Achtung: Im Deutschen heißt der siebte Ton <strong>h</strong>, nicht b. Das b ist ein anderer Ton (siehe Kapitel 5).</p>
+<p>Die sieben <span class="fachwort">Stammtöne</span> heißen <strong>c – d – e – f – g – a – h</strong>. Danach beginnt die Reihe wieder von vorn, nur eine <strong>Oktave</strong> höher. Achtung: Im Deutschen heißt der siebte Ton <strong>h</strong>, nicht b. Das b ist ein anderer Ton (siehe Kapitel 6).</p>
 {N(T.ganze(STAMMTOENE, [T.name(t, True) for t in STAMMTOENE]), "Die Stammtöne vom eingestrichenen c bis zum zweigestrichenen a", zoom=1.7)}
 <p>Damit man weiß, in welcher Oktave ein Ton liegt, bekommt sein Name Striche:</p>
 <ul>
@@ -115,7 +115,7 @@ KAPITEL[4] = {
 }
 
 # ======================================================================
-KAPITEL[5] = {
+KAPITEL[6] = {
 "kurz": "Kreuz, b und Auflösungszeichen, die Namen der erhöhten und erniedrigten Töne, Gültigkeit und enharmonische Verwechslung.",
 "inhalt": f"""
 <p class="lead">Zwischen den meisten weißen Tasten liegen schwarze. Für diese Töne braucht man <span class="fachwort">Vorzeichen</span>.</p>
@@ -144,7 +144,7 @@ KAPITEL[5] = {
   <li>Ein Auflösungszeichen hebt das Vorzeichen schon früher auf.</li>
 </ul>
 {N("F#4/4@fis F4/4@fis F4/4@fis Fn4/4@f | F4/2@f F#4/2@fis |", "Das Kreuz gilt bis zum Taktstrich oder bis zum Auflösungszeichen.", takt="4/4", zoom=1.6)}
-<p>Stehen Vorzeichen gleich hinter dem Schlüssel, heißen sie <span class="fachwort">Generalvorzeichen</span>. Sie gelten für das ganze Stück und in allen Oktaven. An ihnen erkennt man die Tonart (siehe Kapitel 7 und 11).</p>
+<p>Stehen Vorzeichen gleich hinter dem Schlüssel, heißen sie <span class="fachwort">Generalvorzeichen</span>. Sie gelten für das ganze Stück und in allen Oktaven. An ihnen erkennt man die Tonart (siehe Kapitel 8 und 12).</p>
 {N("F4/4@fis G4/4@g A4/4@a F5/4@fis″ |", "Das Generalvorzeichen fis gilt für jedes f, auch für f″.", tonart=1, takt="4/4", zoom=1.6)}
 
 <h2>Ein Ton, zwei Namen</h2>
@@ -187,7 +187,7 @@ KAPITEL[5] = {
 }
 
 # ======================================================================
-KAPITEL[6] = {
+KAPITEL[7] = {
 "kurz": "Lautstärkezeichen von pianissimo bis fortissimo, crescendo und decrescendo, Akzente.",
 "inhalt": f"""
 <p class="lead">Dieselbe Melodie kann zart und leise oder kraftvoll und laut klingen. Wie laut gespielt wird, zeigen die <span class="fachwort">Dynamikzeichen</span>. <em>Dynamik</em> bedeutet die Lautstärke und ihre Veränderung.</p>

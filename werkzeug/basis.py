@@ -20,17 +20,18 @@ KAPITEL = [
     (2, "02-pausen", "Pausen", 1),
     (3, "03-punktierung-triolen", "Punktierte Noten und Triolen", 1),
     (4, "04-violinschluessel", "Noten im Violinschlüssel", 2),
-    (5, "05-vorzeichen", "Vorzeichen", 2),
-    (6, "06-dynamik", "Dynamik", 2),
-    (7, "07-dur-tonleiter", "Ganz- und Halbtöne, Dur-Tonleiter", 3),
-    (8, "08-moll-tonleiter", "Moll-Tonleitern", 3),
-    (9, "09-intervalle", "Intervalle", 4),
-    (10, "10-dreiklaenge", "Dreiklänge", 4),
-    (11, "11-quintenzirkel", "Der Quintenzirkel", 5),
+    (5, "05-bassschluessel", "Noten im Bassschlüssel", 2),
+    (6, "06-vorzeichen", "Vorzeichen", 2),
+    (7, "07-dynamik", "Dynamik", 2),
+    (8, "08-dur-tonleiter", "Ganz- und Halbtöne, Dur-Tonleiter", 3),
+    (9, "09-moll-tonleiter", "Moll-Tonleitern", 3),
+    (10, "10-intervalle", "Intervalle", 4),
+    (11, "11-dreiklaenge", "Dreiklänge", 4),
+    (12, "12-quintenzirkel", "Der Quintenzirkel", 5),
 ]
 
 
-def seite(pfad, titel, inhalt, stufe=None, krumen=None, beschreibung="", skripte=(), hauptklasse=""):
+def seite(pfad, titel, inhalt, stufe=None, krumen=None, beschreibung="", skripte=(), hauptklasse="", sperre=False):
     """pfad: relativ zum Repo, z. B. 'kapitel/01-notenwerte.html'"""
     tiefe = pfad.count("/")
     wurzel = "../" * tiefe if tiefe else "./"
@@ -45,6 +46,10 @@ def seite(pfad, titel, inhalt, stufe=None, krumen=None, beschreibung="", skripte
                 teile.append(f'<li aria-current="page">{html.escape(text)}</li>')
         pfad_html = f'<nav aria-label="Brotkrümel"><ol class="pfad">{"".join(teile)}</ol></nav>'
     body_klasse = f' class="reihe-{stufe}"' if stufe else ""
+    if sperre and stufe:
+        body_klasse += f' data-stufe="{stufe}"'
+    body_klasse += f' data-wurzel="{wurzel}"'
+    skripte = list(skripte) + ["assets/lernpfad.js", "assets/fortschritt.js"]
     skript_html = "".join(f'\n  <script src="{wurzel}{s}" defer></script>' for s in skripte)
     seite_html = f"""<!doctype html>
 <html lang="de">
@@ -67,7 +72,7 @@ def seite(pfad, titel, inhalt, stufe=None, krumen=None, beschreibung="", skripte
   </main>
   <footer class="fuss">
     <div class="huelle">
-      <p>Musikkurs Klasse 10: Notenlehre. Die Übungen speichern keine Daten und funktionieren ohne Anmeldung.</p>
+      <p>Musikkurs Klasse 10: Notenlehre. Keine Anmeldung, keine Datenübertragung. Welche Übungen du gelöst hast, merkt sich nur dein Browser auf diesem Gerät.</p>
     </div>
   </footer>
 </body>
@@ -80,6 +85,6 @@ def seite(pfad, titel, inhalt, stufe=None, krumen=None, beschreibung="", skripte
     return ziel
 
 
-def uebung(typ, daten):
+def uebung(typ, daten, slug=""):
     js = json.dumps(daten, ensure_ascii=False, indent=1).replace("</", "<\\/")
-    return f'<div class="uebung" data-typ="{typ}">\n<script type="application/json">\n{js}\n</script>\n</div>'
+    return f'<div class="uebung" data-typ="{typ}" data-id="{slug}">\n<script type="application/json">\n{js}\n</script>\n</div>'

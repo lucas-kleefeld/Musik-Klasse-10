@@ -536,3 +536,17 @@ a.kap-karte:hover .titel { text-decoration: underline; text-decoration-thickness
 .frage-noten .noten { max-height: 9rem; width: auto; }
 .klick-buehne .noten { max-height: 13rem; width: auto; }
 [hidden] { display: none !important; }
+
+/* ---------- Lernfortschritt ---------- */
+.toast { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 50; max-width: min(92vw, 34rem); padding: 0.8rem 1.1rem; border-radius: var(--radius); border: 2px solid var(--tinte); background: var(--notiz); color: var(--tinte); font-weight: 700; box-shadow: 4px 5px 0 var(--tinte); transition: opacity .6s; }
+.toast.gut { background: var(--richtig-hell); border-color: var(--richtig); box-shadow: 4px 5px 0 var(--richtig); }
+.toast.weg { opacity: 0; }
+main.stufe-gesperrt { display: none; }
+.sperr-kasten { margin-block: 3rem 5rem; padding: 1.5rem 1.4rem; background: var(--flaeche); border: 2px solid var(--tinte); border-radius: var(--radius-gross); box-shadow: 5px 6px 0 var(--farbe); }
+.sperr-kasten h1 { font-size: 2rem; }
+.stufe-stand { margin: -0.3rem 0 0.7rem; font-size: 0.95rem; font-weight: 700; color: var(--farbe); }
+.stufe-stand:empty { display: none; }
+.stufe-sperre { margin: -0.3rem 0 0.8rem; font-weight: 700; color: var(--tinte-weich); }
+.stufe.gesperrt { box-shadow: 5px 6px 0 var(--linie); }
+.stufe.gesperrt .kap-karte { filter: grayscale(.8); opacity: .6; cursor: not-allowed; }
+.liste a.geloest .kachel::after { content: "✓"; position: absolute; right: -0.4rem; bottom: -0.4rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--richtig); color: var(--flaeche); font-weight: 700; display: grid; place-items: center; font-size: 0.95rem; }

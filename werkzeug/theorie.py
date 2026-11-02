@@ -34,6 +34,8 @@ def name(ton, oktave=False):
     elif v == "b":
         n = {"E": "es", "A": "as", "B": "b"}.get(b, n + "es")
     if oktave:
+        if o <= 2:
+            n = n[0].upper() + n[1:]
         n += {3: "", 4: "′", 5: "″", 6: "‴"}.get(o, "")
     return n
 
@@ -45,6 +47,8 @@ def antwort(ton, oktave=False):
         alt = {"b": ["b"], "h": ["h"]}.get(n, [n])
         return alt
     b, v, o = zerlege(ton)
+    if o == 2:
+        return [n[0].upper() + n[1:]]
     striche = {3: "", 4: "'", 5: "''", 6: "'''"}[o]
     return [n + striche, n + str(o - 3) if o > 3 else n]
 

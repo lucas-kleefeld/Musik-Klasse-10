@@ -36,6 +36,8 @@
     return a;
   }
 
+  function melde(container, anteil) { if (window.Fortschritt) window.Fortschritt.melden(container, anteil); }
+
   function lob(anteil) {
     if (anteil === 1) return "Alles richtig – stark!";
     if (anteil >= 0.75) return "Sehr gut, fast alles richtig.";
@@ -81,6 +83,7 @@
           if (f.erklaerung) rueck.appendChild(document.createTextNode(f.erklaerung));
           beantwortet++; if (istRichtig) richtig++;
           leiste.firstChild.textContent = punkteText();
+          if (beantwortet === fragen.length) melde(container, richtig / fragen.length);
         });
         opts.appendChild(b);
       });
@@ -137,7 +140,7 @@
       });
       rueck.innerHTML = "";
       rueck.appendChild(el("strong", { class: n === zeilen.length ? "gut" : "schlecht", text: n + " von " + zeilen.length + " richtig. " }));
-      rueck.appendChild(document.createTextNode(lob(n / zeilen.length)));
+      rueck.appendChild(document.createTextNode(lob(n / zeilen.length))); melde(container, n / zeilen.length);
     }
     // Eigene Antworten bleiben stehen; unter falschen erscheint die richtige Lösung.
     function loesung() {
@@ -201,7 +204,7 @@
       });
       rueck.innerHTML = "";
       rueck.appendChild(el("strong", { class: n === zeilen.length ? "gut" : "schlecht", text: n + " von " + zeilen.length + " richtig. " }));
-      rueck.appendChild(document.createTextNode(lob(n / zeilen.length)));
+      rueck.appendChild(document.createTextNode(lob(n / zeilen.length))); melde(container, n / zeilen.length);
     }
   }
 
@@ -247,7 +250,7 @@
       });
       rueck.innerHTML = "";
       rueck.appendChild(el("strong", { class: n === felder.length ? "gut" : "schlecht", text: n + " von " + felder.length + " richtig. " }));
-      rueck.appendChild(document.createTextNode(lob(n / felder.length)));
+      rueck.appendChild(document.createTextNode(lob(n / felder.length))); melde(container, n / felder.length);
     }
     // Eigene Antworten bleiben stehen; neben falschen erscheint die richtige Lösung.
     function loesung() {
@@ -322,7 +325,7 @@
       geprueft = true; loesungKnopf.disabled = false; sperre_();
       rueck.innerHTML = "";
       rueck.appendChild(el("strong", { class: n === liste.length ? "gut" : "schlecht", text: n + " von " + liste.length + " an der richtigen Stelle. " }));
-      rueck.appendChild(document.createTextNode(lob(n / liste.length)));
+      rueck.appendChild(document.createTextNode(lob(n / liste.length))); melde(container, n / liste.length);
     }
     function loesung() {
       if (!geprueft) return;

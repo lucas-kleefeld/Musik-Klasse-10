@@ -1,4 +1,4 @@
-"""Kapitel 9 und 10: Intervalle und Dreiklänge."""
+"""Kapitel 10 und 11: Intervalle und Dreiklänge."""
 import random
 from notensatz import N
 import theorie as T
@@ -30,7 +30,7 @@ INT_BEISPIELE = [("C4", "C4"), ("C4", "Db4"), ("C4", "D4"), ("C4", "Eb4"), ("C4"
 KAPITEL = {}
 
 # ======================================================================
-KAPITEL[9] = {
+KAPITEL[10] = {
 "kurz": "Namen der Intervalle von der Prime bis zur Oktave, reine, große und kleine Intervalle, Intervalle bestimmen und notieren.",
 "inhalt": f"""
 <p class="lead">Der Abstand zwischen zwei Tönen heißt <span class="fachwort">Intervall</span>. Intervalle bestimmen, wie eine Melodie klingt und wie Akkorde gebaut sind.</p>
@@ -140,7 +140,7 @@ def dk_frage(grund, art):
 
 STUFEN_C = [("C4", "Dur", "I"), ("D4", "Moll", "II"), ("E4", "Moll", "III"), ("F4", "Dur", "IV"), ("G4", "Dur", "V"), ("A4", "Moll", "VI"), ("B4", "vermindert", "VII")]
 
-KAPITEL[10] = {
+KAPITEL[11] = {
 "kurz": "Dreiklänge durch Terzschichtung: Dur, Moll, vermindert und übermäßig, Akkordsymbole und die Hauptdreiklänge einer Tonart.",
 "inhalt": f"""
 <p class="lead">Spielt man drei bestimmte Töne gleichzeitig, entsteht ein voller, runder Klang. Fast alle Lieder werden mit solchen <span class="fachwort">Dreiklängen</span> begleitet.</p>

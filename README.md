@@ -12,13 +12,14 @@ Die Website: `index.html` (über GitHub Pages veröffentlicht).
 | | 2 Pausen | Pausenwerte, Lage im System, Ganztaktpause | Klasse 7 |
 | | 3 Punktierte Noten und Triolen | Punktierung, typische Rhythmen, Achtel- und Vierteltriolen | Klasse 7 |
 | 2 Tonhöhe und Lautstärke | 4 Noten im Violinschlüssel | Notensystem, Stammtöne c′ bis a″, Oktavbereiche, Hilfslinien, Halsrichtung, Klaviatur | Klasse 7 |
-| | 5 Vorzeichen | Kreuz, b, Auflösungszeichen, Tonnamen, Gültigkeit, Generalvorzeichen, enharmonische Verwechslung | Klasse 8 |
-| | 6 Dynamik | ppp bis fff, crescendo, decrescendo, sforzato, Akzent | Klasse 8 |
-| 3 Tonleitern | 7 Ganz- und Halbtöne, Dur-Tonleiter | Halbton, Ganzton, Bauplan Dur, Dur-Tonleitern bilden, Tonart, Tetrachorde | Klasse 8 |
-| | 8 Moll-Tonleitern | natürliches, harmonisches, melodisches Moll, Paralleltonarten | Klasse 8 |
-| 4 Intervalle und Dreiklänge | 9 Intervalle | Prime bis Oktave, rein/groß/klein, bestimmen und notieren | Klasse 9 |
-| | 10 Dreiklänge | Terzschichtung, Dur/Moll/vermindert/übermäßig, Akkordsymbole, Hauptdreiklänge, Umkehrungen | Klasse 8 |
-| 5 Quintenzirkel | 11 Der Quintenzirkel | Herleitung über Tetrachorde, Kreuz- und b-Tonarten, Reihenfolge der Vorzeichen, Tonart bestimmen, Abschlusstest | Klasse 10 |
+| | 5 Noten im Bassschlüssel | F-Schlüssel, großes C bis c′, große und kleine Oktave, Merksätze, Vergleich mit dem Violinschlüssel, Klaviersystem | Klasse 8 |
+| | 6 Vorzeichen | Kreuz, b, Auflösungszeichen, Tonnamen, Gültigkeit, Generalvorzeichen, enharmonische Verwechslung | Klasse 8 |
+| | 7 Dynamik | ppp bis fff, crescendo, decrescendo, sforzato, Akzent | Klasse 8 |
+| 3 Tonleitern | 8 Ganz- und Halbtöne, Dur-Tonleiter | Halbton, Ganzton, Bauplan Dur, Dur-Tonleitern bilden, Tonart, Tetrachorde | Klasse 8 |
+| | 9 Moll-Tonleitern | natürliches, harmonisches, melodisches Moll, Paralleltonarten | Klasse 8 |
+| 4 Intervalle und Dreiklänge | 10 Intervalle | Prime bis Oktave, rein/groß/klein, bestimmen und notieren | Klasse 9 |
+| | 11 Dreiklänge | Terzschichtung, Dur/Moll/vermindert/übermäßig, Akkordsymbole, Hauptdreiklänge, Umkehrungen | Klasse 8 |
+| 5 Quintenzirkel | 12 Der Quintenzirkel | Herleitung über Tetrachorde, Kreuz- und b-Tonarten, Reihenfolge der Vorzeichen, Tonart bestimmen, Abschlusstest | Klasse 10 |
 
 Die Intervalle stehen vor den Dreiklängen, weil die Terzschichtung große und kleine Terzen voraussetzt.
 
@@ -32,15 +33,21 @@ Dazu kommen vier **Werkzeuge**: Klaviatur, interaktiver Quintenzirkel, Taktbauka
 
 „Prüfen“ und „Lösung zeigen“ werden erst freigegeben, wenn eine Übung vollständig bearbeitet ist. Beim Quiz gibt es die Rückmeldung direkt nach jeder beantworteten Frage.
 
-## Kapitel freischalten (für Lehrkräfte)
+## Kapitel und Stufen freischalten (für Lehrkräfte)
 
-Welche Kapitel Schülerinnen und Schüler sehen, steht in der Datei [`freigabe.json`](freigabe.json):
+Die Einstellungen stehen in der Datei [`freigabe.json`](freigabe.json). Ändern: Datei auf GitHub öffnen, auf den Stift („Edit this file“) klicken, `true` oder `false` eintragen, „Commit changes“ klicken. Nach etwa zwei Minuten ist die Website aktualisiert (Reiter „Actions“).
 
-1. Auf GitHub die Datei `freigabe.json` öffnen und auf den Stift („Edit this file“) klicken.
-2. Beim gewünschten Kapitel `true` (frei) oder `false` (gesperrt) eintragen.
-3. Unten auf „Commit changes“ klicken.
+- **„Kapitel 1“ bis „Kapitel 12“:** `false` sperrt ein Kapitel ganz. Es wird dann gar nicht als Seite veröffentlicht.
+- **„Stufen nacheinander freischalten“:** Bei `true` sehen Schülerinnen und Schüler zunächst nur Stufe 1. Die nächste Stufe öffnet sich, sobald alle Übungen der vorherigen Stufe mit mindestens 80 Prozent gelöst sind. Bei `false` sind alle freigeschalteten Kapitel sofort zugänglich, zum Beispiel für die eigene Vorbereitung oder wenn die Klasse gezielt einzelne Themen wiederholen soll.
 
-Danach erzeugt GitHub die Seiten automatisch neu (Reiter „Actions“), nach etwa zwei Minuten ist die Änderung online. Gesperrte Kapitel werden gar nicht als Seiten veröffentlicht. Hinweis: Weil das Repository öffentlich ist, bleiben die Quelltexte im Ordner `werkzeug/` auf GitHub einsehbar.
+Wichtig zur stufenweisen Freischaltung:
+
+- Der Fortschritt wird nur im Browser des jeweiligen Geräts gespeichert (localStorage). Es wird nichts übertragen, und es gibt keine Anmeldung. Auf einem anderen Gerät oder nach dem Löschen der Browserdaten beginnt man wieder bei Stufe 1. Auf der Startseite gibt es einen Knopf zum Zurücksetzen.
+- Erlaubt ein Browser keine Speicherung (z. B. bestimmte private Fenster), sind alle Stufen offen.
+- Die Sperre ist eine Lernhilfe, kein Schutz: Technisch versierte Schülerinnen und Schüler können sie umgehen. Wirklich verbergen lassen sich Inhalte nur über die Kapitel-Schalter.
+- Die Arbeitsblätter zählen nicht für die Freischaltung, nur die interaktiven Übungen. Die Werkzeuge sind immer offen.
+
+Hinweis: Weil das Repository öffentlich ist, bleiben die Quelltexte im Ordner `werkzeug/` auf GitHub einsehbar.
 
 ## Seiten neu erzeugen
 
@@ -48,6 +55,6 @@ Alle HTML-Seiten entstehen aus den Python-Dateien in `werkzeug/` (Inhalte in `ka
 
 ## Datenschutz und Urheberrecht
 
-- Keine externen Inhalte, keine Datenspeicherung, keine Anmeldung. Der Klang wird im Browser erzeugt (Web Audio).
+- Keine externen Inhalte, keine Datenübertragung, keine Anmeldung. Nur der Lernfortschritt wird lokal im Browser gespeichert. Der Klang wird im Browser erzeugt (Web Audio).
 - Texte, Aufgaben, Zeichnungen und Programmcode sind eigens erstellt. Die Notenbeispiele sind eigene Beispiele oder gemeinfreie Tonfolgen; Liedtitel werden nur als Hörhilfe genannt.
 - Notenzeichen: Schrift Bravura (Steinberg) unter der SIL Open Font License (`assets/OFL-Bravura.txt`). Schriften Atkinson Hyperlegible, Bricolage Grotesque und Caveat ebenfalls unter der SIL Open Font License (`assets/fonts/`).

@@ -1,4 +1,4 @@
-"""Kapitel 7 und 8: Ganz- und Halbtöne, Dur- und Moll-Tonleitern."""
+"""Kapitel 8 und 9: Ganz- und Halbtöne, Dur- und Moll-Tonleitern."""
 from notensatz import N
 from kap_tonhoehe import klaviatur_bild
 import theorie as T
@@ -33,7 +33,7 @@ def halbton_aufgabe(grundton, schritte, frage):
 KAPITEL = {}
 
 # ======================================================================
-KAPITEL[7] = {
+KAPITEL[8] = {
 "kurz": "Halbtöne und Ganztöne, der Bauplan der Dur-Tonleiter und wie man Dur-Tonleitern auf jedem Ton bildet.",
 "inhalt": f"""
 <p class="lead">Spielt man auf dem Klavier nur die weißen Tasten von c bis c, klingt es nach „Do-Re-Mi“. Warum das so ist, verrät ein Blick auf die Abstände zwischen den Tönen.</p>
@@ -67,7 +67,7 @@ KAPITEL[7] = {
 <h2>Tonart</h2>
 <p>Steht ein Musikstück in einer bestimmten Dur-Tonleiter, sagt man, es steht in dieser <span class="fachwort">Tonart</span>, zum Beispiel in G-Dur. Die nötigen Vorzeichen schreibt man dann als Generalvorzeichen an den Zeilenanfang. Der Grundton heißt auch <strong>Tonika</strong>: Mit ihm enden die meisten Stücke, er wirkt wie „zu Hause“.</p>
 {N("G4/4 A4/4 B4/4 C5/4 | D5/4 E5/4 F5/4 G5/4 |.", "G-Dur mit Generalvorzeichen: Das fis gilt für jedes f.", tonart=1, takt="4/4", zoom=1.6)}
-<p>Übrigens: Eine Dur-Tonleiter besteht aus zwei gleich gebauten Hälften (1 – 1 – ½), die durch einen Ganzton verbunden sind. Diese Hälften heißen <strong>Tetrachorde</strong>. Sie spielen beim Quintenzirkel (Kapitel 11) eine Rolle.</p>
+<p>Übrigens: Eine Dur-Tonleiter besteht aus zwei gleich gebauten Hälften (1 – 1 – ½), die durch einen Ganzton verbunden sind. Diese Hälften heißen <strong>Tetrachorde</strong>. Sie spielen beim Quintenzirkel (Kapitel 12) eine Rolle.</p>
 <p><a class="knopf leise" href="../werkzeuge/klaviatur.html">Tonleitern auf der Klaviatur spielen</a></p>
 
 <div class="merke"><strong>Merke</strong>
@@ -106,7 +106,7 @@ KAPITEL[7] = {
 }
 
 # ======================================================================
-KAPITEL[8] = {
+KAPITEL[9] = {
 "kurz": "Der Bauplan der natürlichen Moll-Tonleiter, Paralleltonarten sowie harmonisches und melodisches Moll.",
 "inhalt": f"""
 <p class="lead">Spielt man nur die weißen Tasten, aber von a bis a, klingt die Tonleiter auf einmal ganz anders: eher dunkel, ernst oder traurig. Das ist <span class="fachwort">Moll</span>.</p>

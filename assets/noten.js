@@ -86,17 +86,18 @@
     var oben = (spec.oben != null ? spec.oben : 5) * SP;
     var y0 = oben, yUnten = y0 + 4 * SP;          // obere und untere Notenlinie
     var mitte = rhythmus ? y0 + 2 * SP : null;
-    function y(st) { return rhythmus ? mitte : yUnten - (st - 30) * SP / 2; }
+    var bass = spec.schluessel === "bass", BASIS = bass ? 18 : 30, MID = BASIS + 4;
+    function y(st) { return rhythmus ? mitte : yUnten - (st - BASIS) * SP / 2; }
     var svg = [], x = SP * 0.8, notenX = [], hairpins = [], dyns = [], boegen = [], gruppen = {};
     var hatLabel = elemente.some(function (e) { return e.label; });
     var hatDyn = elemente.some(function (e) { return e.dyn; }) || elemente.some(function (e) { return e.typ === "gabel"; });
 
     // Schlüssel, Vorzeichen, Takt
-    if (!rhythmus && spec.schluessel !== false) { svg.push(glyph("gClef", x, yUnten - SP, 1)); x += 3.6 * SP; }
+    if (!rhythmus && spec.schluessel !== false) { if (bass) { svg.push(glyph("fClef", x, y0 + SP, 1)); x += 3.8 * SP; } else { svg.push(glyph("gClef", x, yUnten - SP, 1)); x += 3.6 * SP; } }
     else if (rhythmus) x += 0.6 * SP;
     var tonart = spec.tonart || 0;
     for (var k = 0; k < Math.abs(tonart); k++) {
-      var pos = stufe(tonart > 0 ? KREUZ_POS[k] : B_POS[k]).st;
+      var pos = stufe(tonart > 0 ? KREUZ_POS[k] : B_POS[k]).st - (bass ? 14 : 0);
       svg.push(glyph(tonart > 0 ? "accidentalSharp" : "accidentalFlat", x, y(pos), 1));
       x += 1.1 * SP;
     }
@@ -164,12 +165,12 @@
       if (e.pause || e.frage) return;
       var st = e.toene.map(function (t) { return t.st; });
       e.hoch = Math.max.apply(null, st); e.tief = Math.min.apply(null, st);
-      e.unten = rhythmus ? false : (e.hoch - 34) + (e.tief - 34) >= 0;       // Hals nach unten
+      e.unten = rhythmus ? false : (e.hoch - MID) + (e.tief - MID) >= 0;       // Hals nach unten
     });
     Object.keys(gruppen).forEach(function (id) {
       var n = gruppen[id].n.filter(function (e) { return !e.pause; });
       if (!n.length) return;
-      var summe = 0; n.forEach(function (e) { summe += (e.hoch - 34) + (e.tief - 34); });
+      var summe = 0; n.forEach(function (e) { summe += (e.hoch - MID) + (e.tief - MID); });
       n.forEach(function (e) { e.unten = rhythmus ? false : summe >= 0; });
     });
 
@@ -200,8 +201,8 @@
       // Hilfslinien
       if (!rhythmus) {
         var hl = [];
-        for (var s = 28; s >= e.tief; s -= 2) hl.push(s);
-        for (s = 40; s <= e.hoch; s += 2) hl.push(s);
+        for (var s = BASIS - 2; s >= e.tief; s -= 2) hl.push(s);
+        for (s = BASIS + 10; s <= e.hoch; s += 2) hl.push(s);
         hl.forEach(function (s) { svg.push('<line class="hl-linie" x1="' + r(e.x - 0.4 * SP) + '" y1="' + r(y(s)) + '" x2="' + r(e.x + (kb + 0.4) * SP) + '" y2="' + r(y(s)) + '"/>'); });
       }
       e.toene.forEach(function (t, j) {
@@ -279,7 +280,7 @@
         var yy = gr.balkenMitte.unten ? gr.balkenMitte.y + 2.2 * SP : gr.balkenMitte.y - 0.9 * SP;
         svg.push(glyph("tuplet3", xm - 0.6 * SP, yy, 1));
       } else {
-        var minY = Math.min.apply(null, n.map(function (e) { return e.halsB != null && !e.unten ? e.halsB : (e.pause ? y0 : y(e.hoch || 34)) - SP; }));
+        var minY = Math.min.apply(null, n.map(function (e) { return e.halsB != null && !e.unten ? e.halsB : (e.pause ? y0 : y(e.hoch || MID)) - SP; }));
         var yk = Math.min(minY, y0) - 1.2 * SP;
         var xa = a.x - 0.2 * SP, xb = z.x + 1.4 * SP;
         svg.push('<path class="klammer" d="M' + r(xa) + " " + r(yk + 0.8 * SP) + " V" + r(yk) + " H" + r(xm - 1 * SP) + " M" + r(xm + 1 * SP) + " " + r(yk) + " H" + r(xb) + " V" + r(yk + 0.8 * SP) + '"/>');
@@ -294,7 +295,7 @@
       for (i = bo.idx + 1; i < elemente.length; i++) if (elemente[i].typ === "note") { nach = elemente[i]; break; }
       if (!vor || !nach) return;
       var xa = vor.mitteX, xb = nach.mitteX;
-      var yb = Math.min(y0, vor.halsB != null && !vor.unten ? vor.halsB : y0, nach.halsB != null && !nach.unten ? nach.halsB : y0, y(vor.hoch || 34) - SP, y(nach.hoch || 34) - SP) - 0.8 * SP;
+      var yb = Math.min(y0, vor.halsB != null && !vor.unten ? vor.halsB : y0, nach.halsB != null && !nach.unten ? nach.halsB : y0, y(vor.hoch || MID) - SP, y(nach.hoch || MID) - SP) - 0.8 * SP;
       var kl = /^(HT|½)$/.test(bo.text) ? "bogen ht" : "bogen";
       var t = bo.text === "HT" ? "½" : bo.text === "GT" ? "1" : bo.text;
       svg.push('<path class="' + kl + '" d="M' + r(xa) + " " + r(yb) + " Q" + r((xa + xb) / 2) + " " + r(yb - 1.6 * SP) + " " + r(xb) + " " + r(yb) + '"/>');
@@ -330,7 +331,7 @@
     var maxB = Math.round(breite * (spec.zoom || 1.6));
     var html = '<svg class="noten" viewBox="0 ' + r(top) + " " + r(breite) + " " + r(hoehe) + '" style="max-width:' + maxB + 'px" role="img"' +
       (spec.titel ? ' aria-label="' + esc(spec.titel) + '"' : ' aria-hidden="true"') + ' xmlns="http://www.w3.org/2000/svg">' + titel + linien + svg.join("") + "</svg>";
-    return { svg: html, noten: notenX, breite: breite, hoehe: hoehe, y: y, y0: y0, yUnten: yUnten, start: startNoten, top: top };
+    return { svg: html, noten: notenX, breite: breite, hoehe: hoehe, y: y, y0: y0, yUnten: yUnten, start: startNoten, top: top, basis: BASIS };
   }
 
   return { render: render, stufe: stufe, SP: SP, glyph: glyph, parse: function (t) { return parse(vorbereiten(t)); } };

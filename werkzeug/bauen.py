@@ -8,13 +8,15 @@ from kap_tonhoehe import KAPITEL as K2
 from kap_tonleitern import KAPITEL as K3
 from kap_klang import KAPITEL as K4
 from kap_quintenzirkel import KAPITEL as K5
+from kap_bass import KAPITEL as K6
 
 INHALT = {}
-for k in (K1, K2, K3, K4, K5):
+for k in (K1, K2, K3, K4, K5, K6):
     INHALT.update(k)
 
 AFB_TEXT = {"I": "AFB I", "II": "AFB II", "III": "AFB III"}
-SYMBOL = {1: "notenwerte", 2: "pausen", 3: "punktierung", 4: "violinschluessel", 5: "vorzeichen", 6: "dynamik", 7: "tonleiter", 8: "moll", 9: "intervalle", 10: "dreiklaenge", 11: "quintenzirkel"}
+SYMBOL = {1: "notenwerte", 2: "pausen", 3: "punktierung", 4: "violinschluessel", 5: "bassschluessel", 6: "vorzeichen", 7: "dynamik", 8: "tonleiter", 9: "moll", 10: "intervalle", 11: "dreiklaenge", 12: "quintenzirkel"}
+KOPF = {1: 1, 2: 2, 3: 3, 4: 4, 5: "bass", 6: 5, 7: 6, 8: 7, 9: 8, 10: 9, 11: 10, 12: 11}
 JS_NOTEN = ["assets/glyphen.js", "assets/noten.js", "assets/musik.js"]
 
 # Freischaltung durch die Lehrkraft
@@ -22,7 +24,16 @@ with open(os.path.join(REPO, "freigabe.json"), encoding="utf-8") as f:
     _frei = json.load(f)
 FREI = {int(k.split()[-1]) for k, v in _frei.items() if k.startswith("Kapitel") and v is True}
 
+STUFENWEISE = _frei.get("Stufen nacheinander freischalten", True) is True
 notensatz.glyphen_js(os.path.join(REPO, "assets", "glyphen.js"))
+
+# Lernpfad für die Freischaltung der Stufen (wird im Browser ausgewertet)
+_pfad = {"stufenweise": STUFENWEISE, "namen": {str(k): v[0] for k, v in STUFEN.items()}, "stufen": {}}
+for _nr, _slug, _t, _st in KAPITEL:
+    if _nr in FREI:
+        _pfad["stufen"].setdefault(str(_st), []).extend(u["slug"] for u in INHALT[_nr]["uebungen"] if u["slug"] != "abschlusstest")
+with open(os.path.join(REPO, "assets", "lernpfad.js"), "w", encoding="utf-8") as f:
+    f.write("/* automatisch erzeugt aus freigabe.json und den Kapiteln */\nwindow.LERNPFAD = " + json.dumps(_pfad, ensure_ascii=False) + ";\n")
 
 WERKZEUGE = [
     {"slug": "klaviatur", "titel": "Klaviatur", "kurz": "Töne, Intervalle, Tonleitern und Dreiklänge sehen und hören",
@@ -44,7 +55,7 @@ def kachel_liste(eintraege, ordner, mit_nr=False, symbol_key="symbol"):
     zeilen = []
     for i, e in enumerate(eintraege):
         nr = f'<span class="nr">{i + 1}</span>' if mit_nr else ""
-        zeilen.append(f'<li><a href="{ordner}/{e["slug"]}.html"><span class="kachel">{Z.symbol(e.get(symbol_key, "quiz"))}{nr}</span>'
+        zeilen.append(f'<li><a href="{ordner}/{e["slug"]}.html" data-uebung="{e["slug"]}"><span class="kachel">{Z.symbol(e.get(symbol_key, "quiz"))}{nr}</span>'
                       f'<span class="titel">{html.escape(kurztitel(e["titel"]))}</span><span class="info">{html.escape(e["kurz"])}</span></a></li>')
     return '<ul class="liste zweispaltig">' + "".join(zeilen) + "</ul>"
 
@@ -76,7 +87,7 @@ for nr, slug, titel, stufe in KAPITEL:
              f'<a href="{nach[1]}.html">Weiter: {html.escape(nach[2])}</a>' if nach else '<a href="../index.html">Zur Übersicht</a>']
     inhalt = f"""
 <article class="spalte lerntext">
-  <div class="lt-bild">{Z.kopf(nr)}</div>
+  <div class="lt-bild">{Z.kopf(KOPF[nr])}</div>
   <p class="kapitel-nr">Kapitel {nr} · {html.escape(stufe_name)}</p>
   <h1>{html.escape(titel)}</h1>
 {d["inhalt"]}
@@ -88,7 +99,7 @@ for nr, slug, titel, stufe in KAPITEL:
   <nav class="weiter" aria-label="Weitere Kapitel">{links[0]}{links[1]}</nav>
 </article>"""
     seite(f"kapitel/{slug}.html", f"Kapitel {nr}: {titel}", inhalt, stufe=stufe,
-          krumen=[("Notenlehre", "../index.html"), (f"Kapitel {nr}", None)], beschreibung=d["kurz"], skripte=JS_NOTEN)
+          krumen=[("Notenlehre", "../index.html"), (f"Kapitel {nr}", None)], beschreibung=d["kurz"], skripte=JS_NOTEN, sperre=True)
 
     items = []
     for afb, text, zeilen, figur in d["aufgaben"]:
@@ -113,20 +124,20 @@ for nr, slug, titel, stufe in KAPITEL:
   </nav>
 </article>"""
     seite(f"aufgaben/{slug}.html", f"Aufgaben: {titel}", inhalt, stufe=stufe,
-          krumen=[("Notenlehre", "../index.html"), (f"Kapitel {nr}", f"../kapitel/{slug}.html"), ("Aufgaben", None)], beschreibung=f"Aufgaben zu {titel}")
+          krumen=[("Notenlehre", "../index.html"), (f"Kapitel {nr}", f"../kapitel/{slug}.html"), ("Aufgaben", None)], beschreibung=f"Aufgaben zu {titel}", sperre=True)
 
     for u in ueb:
         inhalt = f"""
 <article class="spalte lerntext uebung-seite">
   <div class="uebung-kopf">{Z.symbol(u.get("symbol", "quiz"))}<h1>{html.escape(u["titel"])}</h1></div>
   <p class="lead">{html.escape(u["anleitung"])}</p>
-  {uebung(u["typ"], u["daten"])}
+  {uebung(u["typ"], u["daten"], u["slug"])}
   <noscript><p>Für diese Übung muss JavaScript im Browser aktiviert sein.</p></noscript>
   <nav class="weiter" aria-label="Navigation"><a href="../kapitel/{slug}.html">Zurück zu Kapitel {nr}</a><a href="../index.html">Zur Übersicht</a></nav>
 </article>"""
         seite(f"uebungen/{u['slug']}.html", u["titel"], inhalt, stufe=stufe,
               krumen=[("Notenlehre", "../index.html"), (f"Kapitel {nr}", f"../kapitel/{slug}.html"), ("Übung", None)],
-              beschreibung=u["kurz"], skripte=["assets/uebungen.js"] + JS_NOTEN)
+              beschreibung=u["kurz"], skripte=["assets/uebungen.js"] + JS_NOTEN, sperre=True)
 
 # ======================================================================
 # Werkzeuge
@@ -162,13 +173,14 @@ for stufe, (sname, klasse) in STUFEN.items():
             karten.append(f'<li><div class="kap-karte gesperrt"><span class="kachel">{Z.symbol(SYMBOL[nr])}<span class="nr">{nr}</span></span>'
                           f'<span class="titel">{html.escape(titel)}</span><span class="info">Noch nicht freigeschaltet.</span></div></li>')
     pfad.append(f"""
-  <section class="stufe reihe-{stufe}" aria-labelledby="stufe-{stufe}">
+  <section class="stufe reihe-{stufe}" data-stufe="{stufe}" aria-labelledby="stufe-{stufe}">
     <div class="stufe-kopf"><span class="stufe-nr">Stufe {stufe}</span><h2 id="stufe-{stufe}">{html.escape(sname)}</h2><span class="stufe-klasse">{html.escape(klasse)}</span></div>
+    <p class="stufe-stand" aria-live="polite"></p><p class="stufe-sperre" hidden></p>
     <ul class="kap-liste">{''.join(karten)}</ul>
   </section>""")
 
 abschluss = ""
-if 11 in FREI:
+if 12 in FREI:
     abschluss = '<p class="knopfreihe"><a class="knopf" href="uebungen/abschlusstest.html">Abschlusstest: 20 Fragen quer durch alle Kapitel</a></p>'
 
 seite("index.html", "Notenlehre", f"""
@@ -185,7 +197,8 @@ seite("index.html", "Notenlehre", f"""
 <div class="huelle">
   <section class="bereich" aria-labelledby="pfad">
     <h2 id="pfad">Der Lernpfad</h2>
-    <p class="hinweis">Die Kapitel bauen aufeinander auf. Wer unsicher ist, fängt vorne an; wer schon sicher ist, springt direkt zu seinem Thema.</p>
+    <p class="hinweis">Die Kapitel bauen aufeinander auf.{" Jede Stufe wird freigeschaltet, sobald du alle Übungen der vorherigen Stufe gelöst hast (mindestens 80 Prozent richtig)." if STUFENWEISE else " Wer unsicher ist, fängt vorne an; wer schon sicher ist, springt direkt zu seinem Thema."}</p>
+    <p class="legende" id="fortschritt-info">Dein Fortschritt wird nur in diesem Browser auf diesem Gerät gespeichert. Auf einem anderen Gerät beginnst du wieder bei Stufe 1. <button class="knopf leise klein" type="button" id="fortschritt-reset">Fortschritt zurücksetzen</button></p>
     <div class="lernpfad">{''.join(pfad)}</div>
     {abschluss}
   </section>

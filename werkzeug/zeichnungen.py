@@ -124,6 +124,12 @@ def kopf(nr):
         for k in range(8):
             i += note(160 + k * 46, 140 - k * 7, 14, "ganze")
         i += text(300, 200, "c′ d′ e′ f′ g′ a′ h′ c″", "hk")
+    elif nr == "bass":
+        i += notenlinien(60, 70, 480, 14) + g("fClef", 74, 84, 14)
+        for k in range(8):
+            i += note(170 + k * 44, 126 - k * 7, 14, "ganze")
+        i += text(330, 200, "G A H c d e f g", "hk")
+        i += '<path class="s f-sand" d="M520 40 q 18 -6 26 10 l -6 120 q -8 18 -22 0 z"/><line class="s2" x1="534" y1="60" x2="534" y2="180"/>'
     elif nr == 5:
         i += g("accidentalSharp", 140, 110, 22) + g("accidentalFlat", 280, 120, 22) + g("accidentalNatural", 420, 110, 22)
         i += text(160, 196, "erhöht", "hk") + text(290, 196, "erniedrigt", "hk") + text(430, 196, "löst auf", "hk")
@@ -165,6 +171,7 @@ def symbol(name):
         "punktierung": note(18, 46, 8, "halbe") + g("augmentationDot", 34, 46, 8),
         "triolen": g("tuplet3", 24, 14, 8) + note(8, 50, 6, "achtel") + note(26, 50, 6, "achtel") + note(44, 50, 6, "achtel"),
         "violinschluessel": notenlinien(4, 18, 56, 7) + g("gClef", 10, 39, 7),
+        "bassschluessel": notenlinien(4, 18, 56, 7) + g("fClef", 8, 25, 7),
         "vorzeichen": g("accidentalSharp", 12, 32, 10) + g("accidentalFlat", 36, 34, 10),
         "dynamik": g("dynamicMezzo", 8, 38, 9) + g("dynamicForte", 32, 38, 9),
         "tonleiter": "".join(f'<rect class="s2 {"f-gelb" if k in (2, 6) else "f-weiss"}" x="{4 + k * 7}" y="{52 - k * 5}" width="7" height="{6 + k * 5}"/>' for k in range(8)),

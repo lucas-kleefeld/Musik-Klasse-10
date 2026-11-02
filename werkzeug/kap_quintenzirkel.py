@@ -1,4 +1,4 @@
-"""Kapitel 11: Der Quintenzirkel – und das Abschlusstraining."""
+"""Kapitel 12: Der Quintenzirkel – und das Abschlusstraining."""
 import math
 from notensatz import N, svg as noten_svg
 from zeichnungen import svg, text
@@ -54,13 +54,13 @@ def tonart_frage(vz):
 
 KAPITEL = {}
 
-KAPITEL[11] = {
+KAPITEL[12] = {
 "kurz": "Wie die Tonarten zusammenhängen: Kreuz- und b-Tonarten, Reihenfolge der Vorzeichen, Paralleltonarten und Tonarten bestimmen.",
 "inhalt": f"""
 <p class="lead">Es gibt viele Dur- und Moll-Tonarten. Der <span class="fachwort">Quintenzirkel</span> ordnet sie alle in einem Kreis an. Damit erkennt man auf einen Blick, wie viele Vorzeichen eine Tonart hat und welche Tonarten miteinander verwandt sind.</p>
 
 <h2>Warum Quinten?</h2>
-<p>Erinnere dich an den Bauplan der Dur-Tonleiter (Kapitel 7): Sie besteht aus zwei gleich gebauten Hälften mit dem Muster 1 – 1 – ½. Die <strong>obere Hälfte von C-Dur</strong> (g – a – h – c) ist gleichzeitig die <strong>untere Hälfte von G-Dur</strong>. G liegt eine <strong>Quinte</strong> über C.</p>
+<p>Erinnere dich an den Bauplan der Dur-Tonleiter (Kapitel 8): Sie besteht aus zwei gleich gebauten Hälften mit dem Muster 1 – 1 – ½. Die <strong>obere Hälfte von C-Dur</strong> (g – a – h – c) ist gleichzeitig die <strong>untere Hälfte von G-Dur</strong>. G liegt eine <strong>Quinte</strong> über C.</p>
 {N("C4/1 {GT} D4/1 {GT} E4/1 {HT} F4/1 || *G4/1 {GT} *A4/1 {GT} *B4/1 {HT} *C5/1 {GT} D5/1 {GT} E5/1 {HT} F#5/1 {HT} G5/1", "Die obere Hälfte von C-Dur ist die untere Hälfte von G-Dur. In der neuen oberen Hälfte muss f zu fis erhöht werden.", zoom=1.4)}
 <p>Für die neue obere Hälfte muss man genau <strong>einen Ton erhöhen</strong>: die 7. Stufe. So kommt mit jedem Schritt eine Quinte nach oben ein Kreuz dazu: C (0) → G (1 ♯) → D (2 ♯) → A (3 ♯) → E (4 ♯) → H (5 ♯) → Fis (6 ♯).</p>
 <p>Geht man von C aus eine Quinte <strong>abwärts</strong>, kommt jedes Mal ein <strong>b</strong> dazu: C (0) → F (1 ♭) → B (2 ♭) → Es (3 ♭) → As (4 ♭) → Des (5 ♭) → Ges (6 ♭).</p>
