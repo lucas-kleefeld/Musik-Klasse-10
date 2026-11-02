@@ -1,0 +1,14 @@
+{
+  "Hinweis": "Zum Freischalten eines Kapitels false durch true ersetzen und speichern (Commit). Zum Sperren true durch false ersetzen. Die Website aktualisiert sich nach etwa zwei Minuten.",
+  "Kapitel 1": true,
+  "Kapitel 2": true,
+  "Kapitel 3": true,
+  "Kapitel 4": true,
+  "Kapitel 5": true,
+  "Kapitel 6": true,
+  "Kapitel 7": true,
+  "Kapitel 8": true,
+  "Kapitel 9": true,
+  "Kapitel 10": true,
+  "Kapitel 11": true
+}
