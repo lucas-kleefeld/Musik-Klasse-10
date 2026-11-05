@@ -470,17 +470,78 @@
     }
   }
 
+
+  /* ---------------------------------------------------------
+     Übung: Taktstriche setzen
+     --------------------------------------------------------- */
+  function taktstriche(box, daten) {
+    var karten = [];
+    var rueck = el("p", { class: "rueckmeldung", "aria-live": "polite" }), hinweis = el("p", { class: "legende loesung-sperre", "aria-live": "polite" });
+    daten.aufgaben.forEach(function (a, nr) {
+      var r = noten(a.noten + " |.", { rhythmus: true, takt: a.takt, zoom: 2 });
+      var n = a.loesung.length;
+      var karte = el("div", { class: "lese-karte" });
+      karte.appendChild(el("p", { class: "frage", text: (nr + 1) + ". " + a.takt + "-Takt: Setze die " + n + " fehlenden Taktstriche." }));
+      var buehne = el("div", { class: "lese-buehne ts-buehne" });
+      buehne.appendChild(svgElement(r.svg));
+      var mitteY = ((r.y0 + 2 * N.SP) - r.top) / r.hoehe * 100;
+      var luecken = [];
+      for (var i = 0; i < r.noten.length - 1; i++) {
+        var x = (r.noten[i].mitteX + r.noten[i + 1].mitteX) / 2 / r.breite * 100;
+        var b = el("button", { type: "button", class: "ts-knopf", "aria-pressed": "false", "aria-label": "Taktstrich zwischen Note " + (i + 1) + " und " + (i + 2) });
+        b.style.left = x + "%"; b.style.top = mitteY + "%";
+        (function (b) { b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); b.classList.remove("ist-richtig", "ist-falsch", "ist-loesung"); aktual(); }); })(b);
+        buehne.appendChild(b); luecken.push(b);
+      }
+      karte.appendChild(buehne);
+      karte.appendChild(spielKnopf(a.noten, { rhythmus: true }, "Rhythmus anhören"));
+      box.appendChild(karte);
+      karten.push({ luecken: luecken, loesung: a.loesung });
+    });
+    var k = knopfreihe(pruefen, loesung, function () { box.innerHTML = ""; taktstriche(box, daten); });
+    box.appendChild(k.reihe); box.appendChild(hinweis); box.appendChild(rueck);
+    function an(c) { return c.luecken.filter(function (b) { return b.getAttribute("aria-pressed") === "true"; }).length; }
+    function offen() { return karten.filter(function (c) { return an(c) !== c.loesung.length; }).length; }
+    function aktual() {
+      sperre([k.pruefen, k.loesung], hinweis, offen, "Aufgabe", "Aufgaben");
+      if (offen()) hinweis.textContent += " Setze in jeder Aufgabe genau so viele Taktstriche, wie angegeben.";
+    }
+    aktual();
+    function pruefen() {
+      if (offen()) return;
+      var n = 0;
+      karten.forEach(function (c) {
+        var ok = true;
+        c.luecken.forEach(function (b, i) {
+          var gesetzt = b.getAttribute("aria-pressed") === "true", soll = c.loesung.indexOf(i) >= 0;
+          if (gesetzt) { b.classList.toggle("ist-richtig", soll); b.classList.toggle("ist-falsch", !soll); }
+          if (gesetzt !== soll) ok = false;
+        });
+        if (ok) n++;
+      });
+      rueckmeldung(rueck, n, karten.length);
+    }
+    function loesung() {
+      if (offen()) return;
+      pruefen();
+      karten.forEach(function (c) { c.luecken.forEach(function (b, i) { if (c.loesung.indexOf(i) >= 0 && b.getAttribute("aria-pressed") !== "true") b.classList.add("ist-loesung"); }); });
+      rueck.appendChild(document.createTextNode(" Fehlende Taktstriche sind jetzt grün gestrichelt eingezeichnet."));
+    }
+  }
+
   /* =========================================================
      Werkzeug: Klaviatur
      ========================================================= */
   function klaviatur(box) {
     var modus = "toene", auswahl = [], VON = 48 + 12, BIS = 84;   // c′ bis c‴
     var tabs = el("div", { class: "wahl", role: "group", "aria-label": "Modus" });
-    [["toene", "Töne"], ["intervall", "Intervalle"], ["leiter", "Tonleitern und Dreiklänge"]].forEach(function (m) {
+    var erlaubt = (box.getAttribute("data-modi") || "").split(",").filter(Boolean);
+    [["toene", "Töne"], ["intervall", "Intervalle"], ["leiter", "Tonleitern und Dreiklänge"]].filter(function (m) { return !erlaubt.length || erlaubt.indexOf(m[0]) >= 0; }).forEach(function (m) {
       var b = el("button", { type: "button", "aria-pressed": m[0] === modus ? "true" : "false", text: m[1] });
       b.addEventListener("click", function () { modus = m[0]; auswahl = []; Array.prototype.forEach.call(tabs.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); leiterBox.hidden = modus !== "leiter"; zeichne(); });
       tabs.appendChild(b);
     });
+    if (tabs.children.length < 2) tabs.hidden = true;
     var leiterBox = el("div", { class: "modell-steuerung", hidden: "" });
     var grund = el("select", { "aria-label": "Grundton" });
     [["C4", "c"], ["D4", "d"], ["E4", "e"], ["F4", "f"], ["G4", "g"], ["A4", "a"], ["B4", "h"], ["Bb4", "b"], ["Eb4", "es"], ["F#4", "fis"], ["C#4", "cis"], ["Ab4", "as"]].forEach(function (g) { grund.appendChild(el("option", { value: g[0], text: g[1] })); });
@@ -692,7 +753,9 @@
     var MODI = {
       stamm: "Stammtöne c′ bis a″", bass: "Bassschlüssel", vorzeichen: "Töne mit Vorzeichen", intervall: "Intervalle", tonart: "Tonarten an den Vorzeichen", dreiklang: "Dreiklänge"
     };
-    var modus = "stamm", nr = 0, richtig = 0, RUNDE = 10, aktuell = null;
+    var erlaubt = (box.getAttribute("data-modi") || "").split(",").filter(Boolean);
+    if (erlaubt.length) Object.keys(MODI).forEach(function (m) { if (erlaubt.indexOf(m) < 0) delete MODI[m]; });
+    var modus = Object.keys(MODI)[0], nr = 0, richtig = 0, RUNDE = 10, aktuell = null;
     var wahl = el("div", { class: "wahl", role: "group", "aria-label": "Was möchtest du üben?" });
     Object.keys(MODI).forEach(function (m) {
       var b = el("button", { type: "button", "aria-pressed": m === modus ? "true" : "false", text: MODI[m] });
@@ -766,7 +829,7 @@
   /* ---------------------------------------------------------
      Start
      --------------------------------------------------------- */
-  var TYPEN = { notenquiz: notenquiz, notenlesen: notenlesen, notieren: notieren, halbtoene: halbtoene };
+  var TYPEN = { notenquiz: notenquiz, notenlesen: notenlesen, notieren: notieren, halbtoene: halbtoene, taktstriche: taktstriche };
   var WERKZEUGE = { klaviatur: klaviatur, quintenzirkel: quintenzirkel, taktbaukasten: taktbaukasten, notentrainer: notentrainer };
   function start() {
     notenbeispiele();
